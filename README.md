@@ -24,7 +24,19 @@ After the game concludes, if the player’s score ranks among the top five highe
 
 - Menu:
 
-When the build powers on, the LCD screen displays the game’s title, "Rocket vs Asteroids," along with "Shoot to start!" and "Press the joystick to open menu." Pressing the joystick opens a menu where options are displayed one at a time, and navigation is handled using the joystick. Players scroll through options by pushing the joystick up or down, enter a menu item by swiping right, go back by swiping left, and confirm selections by pressing the joystick. The menu includes a Leaderboard with two subcategories: Classic (top five scores from the Classic mode) and Time Rush (top five scores from the Time Rush mode). The Modes menu allows players to select between Classic (standard mode with limited ammo), Time Rush (game with a fixed timer), and Unlimited (casual play with unlimited ammo), with modes activated by pressing the fire button. The How to Play menu provides instructions on game mechanics, such as movement, shooting, ammo management, and mode descriptions, with navigation handled through up and down joystick movements. The Settings menu includes options to adjust brightness (from 1 to 5) and toggle or adjust volume levels, with changes confirmed by pressing the joystick. This intuitive system mimics retro arcade controls, enhancing the user experience with easy navigation, customizability, and a nostalgic feel.
+When the build powers on, the LCD screen displays the game’s title, "Rocket vs Asteroids," along with "Shoot to start!" and "Press the joystick to open menu." 
+
+Pressing the joystick opens a menu where options are displayed one at a time, and navigation is handled using the joystick. Players scroll through options by pushing the joystick up or down, enter a menu item by swiping right, go back by swiping left, and confirm selections by pressing the joystick. 
+
+The menu includes a Leaderboard with two subcategories: Classic (top five scores from the Classic mode) and Time Rush (top five scores from the Time Rush mode). 
+
+The Modes menu allows players to select between Classic (standard mode with limited ammo) and Time Rush (game with a fixed timer) with modes activated by pressing the fire button. 
+
+The How to Play menu provides instructions on game mechanics, such as movement, shooting, ammo management, and mode descriptions, with navigation handled through up and down joystick movements. 
+
+The Settings menu includes options to adjust brightness (from 1 to 5) and toggle or adjust volume levels, with changes confirmed by pressing the joystick. 
+
+This intuitive system mimics retro arcade controls, enhancing the user experience with easy navigation, customizability, and a nostalgic feel.
 
 ### Provisional Block Diagram
 
