@@ -1,39 +1,38 @@
-# Joc "Rocket vs Asteroids"
+# "Rocket vs Asteroids" Game
 
-## Introducere
+## Introduction
 
-Acest proiect reprezintă un joc simplu de tip arcade, în care jucătorul controlează o rachetă pentru a evita asteroizii și pentru a trage asupra lor cu proiectile. Jocul este realizat cu ajutorul unei matrice LED pentru afișare, un joystick pentru control și un buton pentru tragere și pornirea jocului, iar un ecran LCD va afișa meniul.
-Scopul proiectului este de a combina divertismentul cu învățarea practică a elementelor de electronică și programare embedded, iar inspirația pentru acest proiect vine din jocurile clasice arcade care oferă o experiență simplă, dar captivantă. Această idee îmi aduce aminte de acea vreme în care împrumutam telefonul mamei, copil fiind, și mă recream câteva zeci de minute jucând 'Rocket vs Asteroids'.
-În ziua de azi, există mulți entuziaști ai jocurilor vechi, sunt multe console noi și mașini de tip arcade (Arcade Cabinets) care emulează experiența de joc retro, iar pentru mine este util să înteleg mai bine concepte de robotică realizând un astfel de proiect.
+This project represents a simple arcade-style game in which the player controls a rocket to avoid asteroids and shoot them with projectiles. The game is built using an LED matrix for display, a joystick for control, and a button for shooting and starting the game, while an LCD screen will display the menu.
+The purpose of the project is to combine entertainment with practical learning in electronics and embedded programming. The inspiration for this project comes from classic arcade games that provide a simple yet captivating experience. This idea reminds me of the time when, as a child, I borrowed my mom's phone to relax and play 'Rocket vs Asteroids' for a few minutes.
+Nowadays, there are many enthusiasts of retro games, as well as new consoles and arcade machines (Arcade Cabinets) that emulate the retro gaming experience. For me, building this project is a useful way to better understand robotics concepts.
 
 ---
 
-## Descriere generală
+## General Description
 
-### Schema bloc provizorie
+### Provisional Block Diagram
 
-- Matrice LED pentru afișarea rachetei, asteroizilor și proiectilelor.
-- Ecran LCD pentru afișarea meniului și a informațiilor legate de scor.
-- Joystick pentru mișcarea rachetei și navigație prin meniu.
-- Buton pentru declanșarea proiectilelor și pornirea jocului.
-- Arduino Uno ca unitate de control principală.
-
+- LED matrix for displaying the rocket, asteroids, and projectiles.
+- LCD screen for displaying the menu and score-related information.
+- Joystick for moving the rocket and navigating through the menu.
+- Button for firing projectiles and starting the game.
+- Arduino Uno as the main control unit.
 ---
 
 ## Hardware Design
 
-### Listă de piese
+### Component List
 
 - 1x Arduino Uno
-- 1x Matrice LED
-- 1x Ecran LCD 16x2
+- 1x LED Matrix
+- 1x LCD display 16x2
 - 1x Joystick
-- 1x Buton pentru tragere și pornirea jocului
-- Fire de conectare
+- 1x Button for firing and starting the game
+- Connecting wires
 - Breadboard
-- Rezistențele necesare
+- Necessary resistors
 
-### Schema electrică
+### Circuit Diagram
 
 ---
 
@@ -41,8 +40,8 @@ Scopul proiectului este de a combina divertismentul cu învățarea practică a 
 
 ---
 
-## Rezultate Obținute
+## Results
 
 ---
 
-## Concluzii
+## Conclusions
