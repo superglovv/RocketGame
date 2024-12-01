@@ -39,7 +39,7 @@ The Settings menu includes options to adjust brightness (from 1 to 5) and toggle
 This intuitive system mimics retro arcade controls, enhancing the user experience with easy navigation, customizability, and a nostalgic feel.
 
 ### Provisional Block Diagram
-
+```
                           +-------------------+
                           |    Arduino Uno    | 
                           +-------------------+
@@ -89,7 +89,7 @@ This intuitive system mimics retro arcade controls, enhancing the user experienc
    | (High Scores)     |
    +-------------------+
 
-
+```
 ---
 
 ## Hardware Design
