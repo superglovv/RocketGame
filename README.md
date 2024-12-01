@@ -38,6 +38,12 @@ The Settings menu includes options to adjust brightness (from 1 to 5) and toggle
 
 This intuitive system mimics retro arcade controls, enhancing the user experience with easy navigation, customizability, and a nostalgic feel.
 
+For this project, I will leverage various features from previous lab exercises:
+
+- Interrupts and timers from Lab 2 will be utilized for precise timing of events such as asteroid movement, projectile firing, and the countdown sequence.
+- Button handling from Lab 0 will manage user inputs, including the fire button and joystick button presses.
+- AnalogWrite and AnalogRead from Lab 3 will be employed for joystick control and possibly adjusting features like brightness or buzzer output.
+
 ### Provisional Block Diagram
 ```
                           +-------------------+
