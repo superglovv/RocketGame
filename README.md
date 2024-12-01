@@ -114,6 +114,12 @@ This intuitive system mimics retro arcade controls, enhancing the user experienc
 
 ## Software Design
 
+For this project, I am using PlatformIO as the development environment. 
+
+The following libraries will be used throughout the development:
+- <LiquidCrystal.h>
+(As the project progresses, I will continue to update the libraries list.)
+
 ---
 
 ## Results
