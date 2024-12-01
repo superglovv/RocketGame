@@ -20,7 +20,7 @@ In addition to dodging, the player can shoot projectiles to destroy asteroids. H
 
 As the game progresses, the difficulty increases: the number of asteroids falling from the top grows steadily, making navigation and shooting more challenging. The game ends if the rocketship collides with an asteroid.
 
-After the game concludes, if the player’s score ranks among the top five highest scores, they are prompted to input their name. This nostalgic feature pays homage to classic arcade cabinets, where high scores and initials were immortalized. Both scores and names are saved in the Arduino Uno's internal memory, ensuring they persist even after the system is powered off.
+After the game concludes, if the player’s score ranks among the top five highest scores (in the Time Rush mode), they are prompted to input their name. This nostalgic feature pays homage to classic arcade cabinets, where high scores and initials were immortalized. Both scores and names are saved in the Arduino Uno's internal memory, ensuring they persist even after the system is powered off.
 
 - Menu:
 
@@ -28,9 +28,9 @@ When the build powers on, the LCD screen displays the game’s title, "Rocket vs
 
 Pressing the joystick opens a menu where options are displayed one at a time, and navigation is handled using the joystick. Players scroll through options by pushing the joystick up or down, enter a menu item by swiping right, go back by swiping left, and confirm selections by pressing the joystick. 
 
-The menu includes a Leaderboard with two subcategories: Classic (top five scores from the Classic mode) and Time Rush (top five scores from the Time Rush mode). 
+The menu includes a Leaderboard for the Time Rush mode (top three scores from the Time Rush mode). 
 
-The Modes menu allows players to select between Classic (standard mode with limited ammo) and Time Rush (game with a fixed timer) with modes activated by pressing the fire button. 
+The Modes menu allows players to select between Classic (standard mode) and Time Rush (game with a fixed timer, competitive) with modes activated by pressing the fire button. 
 
 The How to Play menu provides instructions on game mechanics, such as movement, shooting, ammo management, and mode descriptions, with navigation handled through up and down joystick movements. 
 
@@ -52,7 +52,7 @@ This intuitive system mimics retro arcade controls, enhancing the user experienc
 ### Component List
 
 - 1x Arduino Uno
-- 1x LED Matrix
+- 2x LED Matrix
 - 1x LCD display 16x2
 - Buzzer
 - 1x Joystick
@@ -62,6 +62,8 @@ This intuitive system mimics retro arcade controls, enhancing the user experienc
 - Necessary resistors
 
 ### Circuit Diagram
+
+![Screenshot 2024-12-01 210412](https://github.com/user-attachments/assets/22368afc-4502-4277-aeca-67aa8cc5fc30)
 
 ---
 
