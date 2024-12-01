@@ -40,11 +40,56 @@ This intuitive system mimics retro arcade controls, enhancing the user experienc
 
 ### Provisional Block Diagram
 
-- LED matrix for displaying the rocket, asteroids, and projectiles.
-- LCD screen for displaying the menu and score-related information.
-- Joystick for moving the rocket and navigating through the menu.
-- Button for firing projectiles and starting the game.
-- Arduino Uno as the main control unit.
+                          +-------------------+
+                          |    Arduino Uno    | 
+                          +-------------------+
+                          |                   |
+                          | - Joystick (X, Y) |
+                          | - Button (Press)  |
+                          | - LCD (Display)   |
+                          | - LED Matrix      |
+                          | - Buzzer (Sound)  |
+                          | - EEPROM (Save)   |
+                          +-------------------+
+                               |        |
+              +----------------+        +------------------+
+              |                                         |
+   +-------------------+                     +-------------------+
+   |   Joystick        |                     |     Button        |
+   |                   |                     |                   |
+   | X, Y (Analog)     |                     | Fire (Digital)    |
+   | SEL+ (Digital)    |                     +-------------------+
+   +-------------------+                               |
+              |                                        |
+              v                                        v
+   +-------------------+                    +-------------------+
+   |    LCD Display    |                    |      Buzzer       |
+   |                   |                    |                   |
+   | Score/Leaderboard |                    |Sound (Game Events)|
+   | Menu, Instructions|                    +-------------------+
+   +-------------------+
+              |
+              v
+   +-------------------+
+   |    LED Matrix     |
+   |                   |
+   | Rocket, Asteroids |
+   | Projectiles       |
+   +-------------------+
+              |
+              v
+   +-------------------+
+   |     MAX7219       |
+   |(LED Matrix Driver)|
+   +-------------------+
+              |
+              v
+   +-------------------+
+   |      EEPROM       |
+   | (High Scores)     |
+   +-------------------+
+
+
 ---
 
 ## Hardware Design
@@ -63,7 +108,7 @@ This intuitive system mimics retro arcade controls, enhancing the user experienc
 
 ### Circuit Diagram
 
-![Screenshot 2024-12-01 210412](https://github.com/user-attachments/assets/22368afc-4502-4277-aeca-67aa8cc5fc30)
+![image](https://github.com/user-attachments/assets/68f403c4-a576-442b-83e9-4fc5e2e4d5bc)
 
 ---
 
