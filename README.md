@@ -45,57 +45,8 @@ For this project, I will leverage various features from previous lab exercises:
 - AnalogWrite and AnalogRead from Lab 3 will be employed for joystick control and possibly adjusting features like brightness or buzzer output.
 
 ### Provisional Block Diagram
-```
-                          +-------------------+
-                          |    Arduino Uno    | 
-                          +-------------------+
-                          |                   |
-                          | - Joystick (X, Y) |
-                          | - Button (Press)  |
-                          | - LCD (Display)   |
-                          | - LED Matrix      |
-                          | - Buzzer (Sound)  |
-                          | - EEPROM (Save)   |
-                          +-------------------+
-                               |        |
-              +----------------+        +------------------+
-              |                                         |
-   +-------------------+                     +-------------------+
-   |   Joystick        |                     |     Button        |
-   |                   |                     |                   |
-   | X, Y (Analog)     |                     | Fire (Digital)    |
-   | SEL+ (Digital)    |                     +-------------------+
-   +-------------------+                               |
-              |                                        |
-              v                                        v
-   +-------------------+                    +-------------------+
-   |    LCD Display    |                    |      Buzzer       |
-   |                   |                    |                   |
-   | Score/Leaderboard |                    |Sound (Game Events)|
-   | Menu, Instructions|                    +-------------------+
-   +-------------------+
-              |
-              v
-   +-------------------+
-   |    LED Matrix     |
-   |                   |
-   | Rocket, Asteroids |
-   | Projectiles       |
-   +-------------------+
-              |
-              v
-   +-------------------+
-   |     MAX7219       |
-   |(LED Matrix Driver)|
-   +-------------------+
-              |
-              v
-   +-------------------+
-   |      EEPROM       |
-   | (High Scores)     |
-   +-------------------+
+![image](https://github.com/user-attachments/assets/48c50e57-c627-4a1e-8366-e8ed5b3de248)
 
-```
 ---
 
 ## Hardware Design
@@ -115,6 +66,7 @@ For this project, I will leverage various features from previous lab exercises:
 ### Circuit Diagram
 
 ![image](https://github.com/user-attachments/assets/68f403c4-a576-442b-83e9-4fc5e2e4d5bc)
+![image](https://github.com/user-attachments/assets/bf3b495b-2c6e-4ddf-9d71-831a7f22c294)
 
 ---
 
