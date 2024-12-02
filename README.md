@@ -45,7 +45,7 @@ For this project, I will leverage various features from previous lab exercises:
 - AnalogWrite and AnalogRead from Lab 3 will be employed for joystick control and possibly adjusting features like brightness or buzzer output.
 
 ### Provisional Block Diagram
-![image](https://github.com/user-attachments/assets/48c50e57-c627-4a1e-8366-e8ed5b3de248)
+![image](https://github.com/user-attachments/assets/ebd86ec7-a342-4a27-9ed0-1024c88e8182)
 
 ---
 
