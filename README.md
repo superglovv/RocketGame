@@ -59,11 +59,24 @@ For displaying the score and accessing the game menu, there is the 16x2 LCD disp
 
 The joystick is an essential input device in the game, used for navigating the menu and controlling the rocket’s movements. The joystick has two analog axes, which the Arduino reads via A0 and A1 for horizontal and vertical movement, respectively. A0 & A1 are among the six dedicated analog input pins (A0–A5) on the Arduino Uno, designed to read varying voltage levels, which is exactly what the joystick outputs for its X & Y axes. It also has a built-in button that is mapped to Pin 2 (since it corresponds to Interrupt 0) and serves the purpose of saving configurations in the settings section of the menu. This allows players to easily move the rocket on the screen and interact with the menu and in-game mechanics.
 
-In addition to the joystick, a separate button is used for shooting projectiles towards the asteroids and starting the game. This button, connected to Pin 8 (corresponding to Interrupt 1), is essential for adding interactivity to the game, as players can press it to shoot and destroy the asteroids and the possibilty of controling the movement with one hand (via the joystick) and the shooting with the other hand.
+In addition to the joystick, a separate button is used for shooting projectiles towards the asteroids and starting the game. This button, connected to Pin 3 (corresponding to Interrupt 1), is essential for adding interactivity to the game, as players can press it to shoot and destroy the asteroids and the possibilty of controling the movement with one hand (via the joystick) and the shooting with the other hand.
 
 To enhance the sensory experience, the buzzer provides audio feedback, particularly when the rocket collides with an asteroid. The buzzer is connected to Pin 9, which has PWM capability — allowing to generate varying signal patterns & create tones of different frequencies. Its sound can be triggered during collisions, making the gameplay feel more immersive and engaging.
 
 The breadboard acts as the foundational platform for connecting all the components. It makes it easy to manage the various connections between the Arduino and peripherals without the need for soldering.
+
+| Component             | Pin Number    | Function Description                                              |
+|-----------------------|---------------|-------------------------------------------------------------------|
+| **LED Matrix DIN**     | Pin 11        | Data input for LED matrix communication (SPI)                     |
+| **LED Matrix CLK**     | Pin 13        | Clock signal for LED matrix communication (SPI)                   |
+| **LED Matrix LOAD**    | Pin 10        | Chip select for LED matrix (SPI)                                  |
+| **LCD SDA**            | Pin A4        | I2C data line for LCD communication                               |
+| **LCD SCL**            | Pin A5        | I2C clock line for LCD communication                              |
+| **Joystick VRx (Horizontal)** | Pin A0    | Analog input for joystick's horizontal axis movement              |
+| **Joystick VRy (Vertical)**   | Pin A1    | Analog input for joystick's vertical axis movement                |
+| **Joystick Button**    | Pin 2         | Button for joystick press (interrupt enabled)                     |
+| **Shooting Button**    | Pin 3         | Button to trigger shooting action (interrupt enabled)             |
+| **Buzzer**             | Pin 9         | Buzzer for sound feedback (PWM capable)                           |
 
 
 ### Bill Of Materials
