@@ -51,17 +51,35 @@ For this project, I will leverage various features from previous lab exercises:
 
 ## Hardware Design
 
-### Component List
+In my project, the Arduino Uno serves as the central controller, coordinating all the inputs and outputs. It's responsible for processing user inputs, updating the LED matrices to display the rocket and asteroids, handling the menu on the LCD, and controlling the buzzer to provide sound effects. The Arduino is the brain behind the game, managing all aspects of gameplay, from navigation to firing, and ensuring that the game logic runs smoothly. It's connected to the other components via the GPIO pins, which handle communication with these elements.
 
-- 1x Arduino Uno
-- 2x LED Matrix
-- 1x LCD display 16x2
-- Buzzer
-- 1x Joystick
-- 1x Button for firing and starting the game
-- Connecting wires
-- Breadboard
-- Necessary resistors
+The LED matrices are key to displaying the game environment. These two 8x8 matrices, driven by two MAX7219 LED drivers, serve as the screen where the rocket and asteroids are shown. The MAX7219 simplifies controlling multiple LEDs, reducing the number of pins needed and allowing the Arduino to focus on game logic. These matrices communicate with the Arduino using SPI, with specific pins assigned for DIN (Data In - Pin 11 since it is part of the SPI/ Serial Peripheral Interface), CLK (Clock - Pin 13 since it is traditionally used for the SCK/ Serial Clock), and LOAD (CS/ Chip Select - Pin 10 since it is traditionally used as SS/ Slave Select) to transmit data and refresh the display.
+
+For displaying the score and accessing the game menu, there is the 16x2 LCD display. This LCD is controlled using the I2C protocol, which allows it to communicate with the Arduino using just two data pins—SDA (SDA - Pin A4) and SCL—saving (SCL - Pin A5). The LCD shows information such as the score during gameplay and provides an interface for navigating the game’s menu.
+
+The joystick is an essential input device in the game, used for navigating the menu and controlling the rocket’s movements. The joystick has two analog axes, which the Arduino reads via A0 and A1 for horizontal and vertical movement, respectively. It also has a built-in button that is mapped to Pin 2 and serves the purpose of saving configurations in the settings section of the menu. This allows players to easily move the rocket on the screen and interact with the menu and in-game mechanics.
+
+In addition to the joystick, a separate button is used for shooting projectiles towards the asteroids and starting the game. This button, connected to Pin 8, is essential for adding interactivity to the game, as players can press it to shoot and destroy the asteroids and the possibilty of controling the movement with one hand (via the joystick) and the shooting with the other hand.
+
+To enhance the sensory experience, the buzzer provides audio feedback, particularly when the rocket collides with an asteroid. The buzzer is connected to Pin 9, and its sound can be triggered during collisions, making the gameplay feel more immersive and engaging.
+
+The breadboard acts as the foundational platform for connecting all the components. It makes it easy to manage the various connections between the Arduino and peripherals without the need for soldering.
+
+
+### Bill Of Materials
+
+| **Name**                        | **Source**                      | **Datasheet Link**                                                                                     |
+|----------------------------------|---------------------------------|--------------------------------------------------------------------------------------------------------|
+| Arduino Uno                      | University Of Bucharest      | [Arduino Uno Datasheet](https://docs.arduino.cc/resources/datasheets/A000066-datasheet.pdf)                                 |
+| I2C LCD Display 16x2             | [Optimu Digital](https://www.google.com/aclk?sa=L&ai=DChcSEwiquoygl6WKAxUIbEECHWaMIksYABAAGgJ3cw&co=1&ase=2&gclid=EAIaIQobChMIqrqMoJeligMVCGxBAh1mjCJLEAAYASAAEgJzXPD_BwE&sig=AOD64_3gKZwYI8h5odrFMlnXUxdu7K6dFw&q&nis=4&adurl&ved=2ahUKEwjlwoagl6WKAxUqR_EDHZSDEB4Q0Qx6BAgKEAE)      | [I2C LCD Datasheet](https://www.handsontec.com/dataspecs/module/I2C_1602_LCD.pdf)                                               |
+| 8x8 LED Matrix with MAX7219 Driver (2x) | University Of Bucharest      | [MAX7219 LED Matrix Datasheet](https://www.handsontec.com/dataspecs/display/MAX7219-8x8.pdf)                                     |
+| Buzzer                           | University Of Bucharest          | [Buzzer Datasheet](https://www.farnell.com/datasheets/2171929.pdf)                                      |
+| Joystick                         | University Of Bucharest     | [Joystick Module Datasheet](https://www.hwkitchen.cz/user/related_files/joystick-modul-s-tlacitkem-datasheet-pdf.pdf)                                      |
+| Button (for firing and starting) | University Of Bucharest      | [Button Datasheet](https://www.hdk.co.jp/pdf/eng/e291702.pdf)  |
+| Connecting Wires                 | University Of Bucharest          | -                                                 |
+| Breadboard                       | University Of Bucharest      | [Breadboard Datasheet](https://www.farnell.com/datasheets/1734497.pdf)                                             |
+| Resistors (220 Ohm)             | University Of Bucharest      | -              |
+
 
 ### Circuit Diagram
 
