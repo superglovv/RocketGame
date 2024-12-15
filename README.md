@@ -44,9 +44,6 @@ For this project, I will leverage various features from previous lab exercises:
 - Button handling from Lab 0 will manage user inputs, including the fire button and joystick button presses.
 - AnalogWrite and AnalogRead from Lab 3 will be employed for joystick control and possibly adjusting features like brightness or buzzer output.
 
-### Block Diagram
-![image](https://github.com/user-attachments/assets/1ed82f72-cd13-4971-bc54-d2f1a142c8cd)
-
 ---
 
 ## Hardware Design
@@ -93,11 +90,148 @@ The breadboard acts as the foundational platform for connecting all the componen
 | Breadboard                       | University Of Bucharest      | [Breadboard Datasheet](https://www.farnell.com/datasheets/1734497.pdf)                                             |
 | Resistors (220 Ohm)             | University Of Bucharest      | -              |
 
+### Block Diagram
+![image](https://github.com/user-attachments/assets/1ed82f72-cd13-4971-bc54-d2f1a142c8cd)
+
 
 ### Circuit Diagram
 
 ![image](https://github.com/user-attachments/assets/876db71a-0964-4d03-a17e-ed9f1f99625a)
 ![image](https://github.com/user-attachments/assets/461ce925-60d8-4eaa-8e0a-31e8c1caa680)
+
+### Photos and Testing:
+The functionality of the key components—LCD display, LED matrices, joystick, and buttons has been tested using the following program:
+```cpp
+#include "LedControl.h" 
+#include <Wire.h>       
+#include <LiquidCrystal_I2C.h> 
+
+const int VRx = A0; 
+const int VRy = A1; 
+const int joystickButton = 2;   
+
+const int newButton = 3; 
+
+const byte dinPin = 11;
+const byte clockPin = 13;
+const byte loadPin = 10;
+const byte numMatrices = 2;
+
+const int buzzerPin = 9;
+
+LedControl lc = LedControl(dinPin, clockPin, loadPin, numMatrices);
+byte matrixBrightness = 2;
+
+LiquidCrystal_I2C lcd(0x27, 16, 2);
+
+void testJoystick();
+void animateMatrices();
+void checkNewButton();
+void displayTest();
+
+void setup() {
+  Serial.begin(9600);
+
+  pinMode(joystickButton, INPUT_PULLUP);
+  pinMode(newButton, INPUT);
+  
+  pinMode(buzzerPin, OUTPUT);
+
+  tone(buzzerPin, 2000);
+  delay(1000);
+  tone(buzzerPin, 1000);
+  delay(1000);
+  noTone(buzzerPin); 
+
+  for (int i = 0; i < numMatrices; i++) {
+    lc.shutdown(i, false);           
+    lc.setIntensity(i, matrixBrightness); 
+    lc.clearDisplay(i);              
+  }
+
+  lcd.init();   
+  lcd.backlight();   
+  lcd.setCursor(0, 0); 
+  displayTest(); 
+}
+
+void loop() {
+  testJoystick();    
+  checkNewButton();   
+  // animateMatrices();  
+}
+
+// Function to test joystick functionality
+void testJoystick() {
+  int xValue = analogRead(VRx); // Read horizontal position
+  int yValue = analogRead(VRy); // Read vertical position
+  bool joystickPressed = (digitalRead(joystickButton) == LOW); // Check joystick button state
+
+  // Print joystick status
+  if (joystickPressed) {
+    Serial.println(F("Joystick Button Pressed"));
+  } else if (xValue < 200) {
+    Serial.println("Joystick Left");
+  } else if (xValue > 800) {
+    Serial.println("Joystick Right");
+  } else if (yValue < 200) {
+    Serial.println("Joystick Up");
+  } else if (yValue > 800) {
+    Serial.println("Joystick Down");
+  } else {
+    Serial.println("Joystick Center");
+  }
+
+  delay(300);
+}
+
+// Function to check the new button
+void checkNewButton() {
+  bool newButtonPressed = (digitalRead(newButton) == HIGH); // Button is pressed when HIGH
+
+  if (newButtonPressed) {
+    Serial.println(F("New Button Pressed"));
+    delay(300);
+  }
+}
+
+// Function to animate LEDs on the matrices
+void animateMatrices() {
+  for (int matrix = numMatrices - 1; matrix >= 0; matrix--) {
+    for (int row = 0; row < 8; row++) {
+      for (int col = 0; col < 8; col++) {
+        lc.setLed(matrix, row, col, true); // Turn on the LED
+        delay(25);
+      }
+    }
+  }
+
+  for (int matrix = numMatrices - 1; matrix >= 0; matrix--) {
+    for (int row = 0; row < 8; row++) {
+      for (int col = 0; col < 8; col++) {
+        lc.setLed(matrix, row, col, false); // Turn off the LED
+        delay(25);
+      }
+    }
+  }
+}
+
+// Function to display Game Ready on the LCD
+void displayTest() {
+  lcd.clear();               // Clear the LCD screen
+  lcd.setCursor(0, 0);       // Set cursor to the first line
+  lcd.print("Game Ready ;)!"); // Display "Game Ready ;)!" on the second line
+  lcd.setCursor(0, 1);       // Set cursor to the second line
+  lcd.print("I2C LCD Test"); // Display "I2C LCD Test" on the second line
+}
+
+```
+The program utilizes the LedControl library for controlling the LED matrices, the LiquidCrystal_I2C library for the LCD display, and the analog and digital pins for reading the joystick and buttons. The LCD display and LED matrices were verified by displaying "Game Ready ;)! I2C LCD Test" and animating LEDs, respectively. Screenshots of the LCD and LED matrices in operation are included to show that both components are working as expected.
+
+For testing the joystick and buttons, the joystick's horizontal and vertical values are read via analog pins A0 and A1, while the joystick button and the shooting button are read through digital pins (2 & 3). Serial monitor outputs show the joystick's movement (left, right, up, down, center) and button presses, which were tested by observing the corresponding outputs in the serial monitor:
+https://github.com/user-attachments/assets/460b8da2-ee60-4b94-a76b-75ecfbb8b40f
+
+
 
 ---
 
