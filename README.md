@@ -100,6 +100,13 @@ The breadboard acts as the foundational platform for connecting all the componen
 ![image](https://github.com/user-attachments/assets/461ce925-60d8-4eaa-8e0a-31e8c1caa680)
 
 ### Photos and Testing:
+
+![WhatsApp Image 2024-12-15 at 18 49 29_23edfa23](https://github.com/user-attachments/assets/a18f8312-529f-4e5a-8749-96b19ad77357)
+![WhatsApp Image 2024-12-15 at 18 49 28_86ef5022](https://github.com/user-attachments/assets/fc4fb3f8-9696-427d-a1ec-c171eb699aca)
+![WhatsApp Image 2024-12-15 at 18 49 28_bd1f7200](https://github.com/user-attachments/assets/322c319e-cd46-4590-9304-440a196fa5a2)
+![image](https://github.com/user-attachments/assets/2d58b81f-f56a-48f3-ba69-dd8bed7362ed)
+![WhatsApp Image 2024-12-15 at 18 49 28_24aeb993](https://github.com/user-attachments/assets/f9052ebf-edf1-49ea-8320-72689de5b382)
+
 The functionality of the key components—LCD display, LED matrices, joystick, and buttons has been tested using the following program:
 ```cpp
 #include "LedControl.h" 
@@ -228,8 +235,14 @@ void displayTest() {
 ```
 The program utilizes the LedControl library for controlling the LED matrices, the LiquidCrystal_I2C library for the LCD display, and the analog and digital pins for reading the joystick and buttons. The LCD display and LED matrices were verified by displaying "Game Ready ;)! I2C LCD Test" and animating LEDs, respectively. Screenshots of the LCD and LED matrices in operation are included to show that both components are working as expected.
 
+![WhatsApp Image 2024-12-15 at 18 49 28_0ea6306f](https://github.com/user-attachments/assets/810737e5-999e-400f-b1fd-d0798e3cd354)
+![WhatsApp Image 2024-12-15 at 18 49 28_6a81f3ac](https://github.com/user-attachments/assets/2a1ec5c5-3ecb-4ed8-b6eb-6dcad213e355)
+
 For testing the joystick and buttons, the joystick's horizontal and vertical values are read via analog pins A0 and A1, while the joystick button and the shooting button are read through digital pins (2 & 3). Serial monitor outputs show the joystick's movement (left, right, up, down, center) and button presses, which were tested by observing the corresponding outputs in the serial monitor:
-https://github.com/user-attachments/assets/460b8da2-ee60-4b94-a76b-75ecfbb8b40f
+
+https://github.com/user-attachments/assets/25265325-a636-4ac7-883d-4d63312b6a5a
+
+
 
 
 
