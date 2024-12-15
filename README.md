@@ -44,8 +44,8 @@ For this project, I will leverage various features from previous lab exercises:
 - Button handling from Lab 0 will manage user inputs, including the fire button and joystick button presses.
 - AnalogWrite and AnalogRead from Lab 3 will be employed for joystick control and possibly adjusting features like brightness or buzzer output.
 
-### Provisional Block Diagram
-![image](https://github.com/user-attachments/assets/ebd86ec7-a342-4a27-9ed0-1024c88e8182)
+### Block Diagram
+![image](https://github.com/user-attachments/assets/1ed82f72-cd13-4971-bc54-d2f1a142c8cd)
 
 ---
 
@@ -96,8 +96,8 @@ The breadboard acts as the foundational platform for connecting all the componen
 
 ### Circuit Diagram
 
-![image](https://github.com/user-attachments/assets/68f403c4-a576-442b-83e9-4fc5e2e4d5bc)
-![image](https://github.com/user-attachments/assets/bf3b495b-2c6e-4ddf-9d71-831a7f22c294)
+![image](https://github.com/user-attachments/assets/876db71a-0964-4d03-a17e-ed9f1f99625a)
+![image](https://github.com/user-attachments/assets/461ce925-60d8-4eaa-8e0a-31e8c1caa680)
 
 ---
 
@@ -106,7 +106,9 @@ The breadboard acts as the foundational platform for connecting all the componen
 For this project, I am using PlatformIO as the development environment. 
 
 The following libraries will be used throughout the development:
-- <LiquidCrystal.h>
+- <LiquidCrystal_I2C.h>
+- "LedControl.h"
+- <Wire.h>
 (As the project progresses, I will continue to update the libraries list.)
 
 ---
