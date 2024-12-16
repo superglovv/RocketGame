@@ -48,7 +48,9 @@ For this project, I will leverage various features from previous lab exercises:
 
 ## Hardware Design
 
-In my project, the Arduino Uno serves as the central controller, coordinating all the inputs and outputs. It's responsible for processing user inputs, updating the LED matrices to display the rocket and asteroids, handling the menu on the LCD, and controlling the buzzer to provide sound effects. The Arduino is the brain behind the game, managing all aspects of gameplay, from navigation to firing, and ensuring that the game logic runs smoothly. It's connected to the other components via the GPIO pins, which handle communication with these elements.
+<details>
+<summary> <b> General Description </b> </summary>
+  In my project, the Arduino Uno serves as the central controller, coordinating all the inputs and outputs. It's responsible for processing user inputs, updating the LED matrices to display the rocket and asteroids, handling the menu on the LCD, and controlling the buzzer to provide sound effects. The Arduino is the brain behind the game, managing all aspects of gameplay, from navigation to firing, and ensuring that the game logic runs smoothly. It's connected to the other components via the GPIO pins, which handle communication with these elements.
 
 The LED matrices are key to displaying the game environment. These two 8x8 matrices, driven by two MAX7219 LED drivers, serve as the screen where the rocket and asteroids are shown. The MAX7219 simplifies controlling multiple LEDs, reducing the number of pins needed and allowing the Arduino to focus on game logic. These matrices communicate with the Arduino using SPI, with specific pins assigned for DIN (Data In - Pin 11 since it is part of the SPI/ Serial Peripheral Interface), CLK (Clock - Pin 13 since it is traditionally used for the SCK/ Serial Clock), and LOAD (CS/ Chip Select - Pin 10 since it is traditionally used as SS/ Slave Select) to transmit data and refresh the display.
 
@@ -61,7 +63,11 @@ In addition to the joystick, a separate button is used for shooting projectiles 
 To enhance the sensory experience, the buzzer provides audio feedback, particularly when the rocket collides with an asteroid. The buzzer is connected to Pin 9, which has PWM capability — allowing to generate varying signal patterns & create tones of different frequencies. Its sound can be triggered during collisions, making the gameplay feel more immersive and engaging.
 
 The breadboard acts as the foundational platform for connecting all the components. It makes it easy to manage the various connections between the Arduino and peripherals without the need for soldering.
+</details>
 
+<details>
+<summary> <b> Pins </b> </summary>
+  
 | Component             | Pin Number    | Function Description                                              |
 |-----------------------|---------------|-------------------------------------------------------------------|
 | **LED Matrix DIN**     | Pin 11        | Data input for LED matrix communication (SPI)                     |
@@ -74,10 +80,11 @@ The breadboard acts as the foundational platform for connecting all the componen
 | **Joystick Button**    | Pin 2         | Button for joystick press (interrupt enabled)                     |
 | **Shooting Button**    | Pin 3         | Button to trigger shooting action (interrupt enabled)             |
 | **Buzzer**             | Pin 9         | Buzzer for sound feedback (PWM capable)                           |
+</details>
 
-
-### Bill Of Materials
-
+<details>
+<summary> <b> Bill of Materials </b> </summary>
+  
 | **Name**                        | **Source**                      | **Datasheet Link**                                                                                     |
 |----------------------------------|---------------------------------|--------------------------------------------------------------------------------------------------------|
 | Arduino Uno                      | University Of Bucharest      | [Arduino Uno Datasheet](https://docs.arduino.cc/resources/datasheets/A000066-datasheet.pdf)                                 |
@@ -90,17 +97,26 @@ The breadboard acts as the foundational platform for connecting all the componen
 | Breadboard                       | University Of Bucharest      | [Breadboard Datasheet](https://www.farnell.com/datasheets/1734497.pdf)                                             |
 | Resistors (220 Ohm)             | University Of Bucharest      | -              |
 
-### Block Diagram
+</details>
+
+<details>
+<summary> <b> Block Diagram </b> </summary>
+  
 ![image](https://github.com/user-attachments/assets/1ed82f72-cd13-4971-bc54-d2f1a142c8cd)
+</details>
 
-
-### Circuit Diagram
-
+<details>
+<summary> <b> Circuit Diagram </b> </summary>
+  
 ![image](https://github.com/user-attachments/assets/876db71a-0964-4d03-a17e-ed9f1f99625a)
 ![image](https://github.com/user-attachments/assets/461ce925-60d8-4eaa-8e0a-31e8c1caa680)
+</details>
 
-### Photos and Testing:
 
+
+<details>
+<summary> <b> Photos and Testing </b> </summary>
+  
 ![WhatsApp Image 2024-12-15 at 18 49 29_23edfa23](https://github.com/user-attachments/assets/a18f8312-529f-4e5a-8749-96b19ad77357)
 ![WhatsApp Image 2024-12-15 at 18 49 28_86ef5022](https://github.com/user-attachments/assets/fc4fb3f8-9696-427d-a1ec-c171eb699aca)
 ![WhatsApp Image 2024-12-15 at 18 49 28_bd1f7200](https://github.com/user-attachments/assets/322c319e-cd46-4590-9304-440a196fa5a2)
@@ -242,9 +258,7 @@ For testing the joystick and buttons, the joystick's horizontal and vertical val
 
 https://github.com/user-attachments/assets/25265325-a636-4ac7-883d-4d63312b6a5a
 
-
-
-
+</details>
 
 ---
 
