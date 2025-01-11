@@ -262,13 +262,286 @@ https://github.com/user-attachments/assets/25265325-a636-4ac7-883d-4d63312b6a5a
 
 ## Software Design
 
+<details>
+<summary> <b> General Description </b> </summary>
+
+The current version of the game software is fully functional and delivers a comprehensive and engaging gaming experience. It features a menu system, accessible through the LCD display using joystick movements, which provides four options: Game Mode, Leaderboard, Settings, and Easter Eggs. Players can tailor their gameplay by adjusting volume and brightness settings or selecting their preferred game mode. The Easter Eggs option adds an element of discovery and fun, with the menu displaying the count of discovered Easter eggs, encouraging exploration.
+
+The game itself adapts dynamically to the selected mode. In Classic mode, players enjoy endless playtime without ammo or time restrictions, skillfully navigating a rocket to avoid or shoot asteroids. Meanwhile, Time Rush offers a competitive challenge with limited ammo, a fixed timer, and a high-score leaderboard stored in the Arduino Uno's EEPROM memory. Gameplay intensity is amplified by a dynamic asteroid spawning system, where the frequency and speed of asteroids increase over time, ensuring progressively challenging play.
+
+To enhance reliability and precision, the program incorporates collision detection, enabling accurate interactions between the rocket and asteroids. A score tracking and leaderboard system tracks player performance, motivating improvement and replayability. Additionally, the inclusion of button debouncing ensures reliable input, minimizing false triggers and enhancing the overall user experience.
+
+While the menu is conveniently displayed on the LCD screen, the gameplay unfolds on two LED matrices, offering a retro aesthetic and an expanded playfield. Together, these elements aim to create a polished and immersive gaming experience that balances fun and challenge.
+
+</details>
+
+<details>
+<summary> <b> Library Selection </b> </summary>
+  
 For this project, I am using PlatformIO as the development environment. 
 
-The following libraries will be used throughout the development:
+The following libraries have been used throughout the development:
+- <Arduino.h>
+  - Provides compatibility with the Arduino framework
 - <LiquidCrystal_I2C.h>
+  - Enables efficient I2C communication with the LCD display
+  - Reduces pin usage compared to direct LCD connection
+  - Provides comprehensive display control functions
+  - Well-maintained and widely tested library
 - "LedControl.h"
-- <Wire.h>
-(As the project progresses, I will continue to update the libraries list.)
+  - Specialized for controlling LED matrix displays
+  - Efficient management of multiple cascaded LED matrices
+  - Provides low-level control for custom animations
+  - Optimized for MAX7219 LED driver
+- <EEPROM.h>
+  - Built-in Arduino library for persistent storage
+  - Essential for maintaining leaderboard data
+  - Reliable long-term data storage solution
+  - Low memory overhead
+</details>
+
+<details>
+<summary> <b> Innovation Elements </b> </summary>
+  
+The project introduces several elements that could be considered innovative in order to enhance the gaming experience. The use of two LED matrices creates a larger game area and enables seamless transitions of game elements between displays, providing an expanded, visually engaging playfield. The dynamic difficulty system ensures a progressively challenging experience by increasing difficulty based on gameplay time, featuring adaptive asteroid spawning rates and speed variations, with multiple game modes catering to different skill levels. The easter eggs add an element of surprise, rewarding players through hidden features unlocked via button combinations, achievements, or skill-based actions, encouraging exploration.
+</details>
+
+<details>
+<summary> <b> Laboratory Functionality Implementation </b> </summary>
+
+The project's functionality incorporates key features developed with knowledge from previous laboratory exercises to ensure precise and responsive gameplay. Interrupts and timers from Lab 2 are utilized to manage critical timing events, such as asteroid movement, projectile firing, and the countdown sequence, enabling smooth and synchronized game dynamics. 
+```cpp
+attachInterrupt(digitalPinToInterrupt(SHOOTING_BUTTON), shootingButtonISR, FALLING);
+attachInterrupt(digitalPinToInterrupt(JOYSTICK_BUTTON), joystickButtonISR, FALLING);
+```
+These interrupt handlers are used for the shooting and joystick buttons, triggering on the FALLING edge for responsive input detection.
+
+Button handling techniques from Lab 0 are employed to manage user inputs reliably, including the fire button and joystick button presses, ensuring seamless interaction during gameplay.
+```cpp
+void shootingButtonISR() {
+  static unsigned long lastDebounceTime = 0;
+  unsigned long currentTime = millis();
+  
+  if (currentTime - lastDebounceTime > DELAY && !inMenu) {
+    shootingButtonPressed = true;
+    joystickButtonPressed = false;
+  }
+  lastDebounceTime = currentTime;
+}
+```
+The code implements software debouncing using time comparison to prevent multiple triggers from a single button press.
+
+Analog input handling from Lab 3 is used for joystick control, providing accurate and intuitive navigation within the game and menu system.
+```cpp
+int xValue = analogRead(JOYSTICK_VRX);
+int yValue = analogRead(JOYSTICK_VRY);
+```
+AnalogRead is used for joystick position detection, reading values from 0-1023 to determine movement direction.
+
+Additionally, in the project I've used PWM through the tone() function for sound generation, with volume control mapped to frequency values.
+```cpp
+void playSound(int volume) {
+  int frequency = map(volume, 0, 100, 0, 4000);
+  tone(BUZZER, frequency);
+  delay(500);
+  noTone(BUZZER);
+}
+```
+
+These foundational elements, adapted from prior labs, contribute significantly to the game's overall precision and functionality.
+</details>
+
+<details>
+<summary> <b> Project Structure and Functionality </b> </summary>
+The structure of the project is designed to be modular, with a clear organization of variables, macros, and functions to streamline development and facilitate future changes. The variables and macros are grouped by functionality, with comments in the code to ensure easy modification or addition of new variables. This structured approach not only simplifies updates but also provides a stable starting state for the game. 
+
+```cpp
+#define LED_MATRIX_DIN 11
+#define LED_MATRIX_CLK 13
+#define LED_MATRIX_LOAD 10
+#define LCD_SDA A4
+#define LCD_SCL A5
+#define JOYSTICK_VRX A0
+#define JOYSTICK_VRY A1
+#define JOYSTICK_BUTTON 2
+#define SHOOTING_BUTTON 3
+#define BUZZER 9
+
+// General:
+volatile bool shootingButtonPressed = false;
+volatile bool joystickButtonPressed = false;
+const long RIGHT_UP = 800;
+const long LEFT_DOWN = 200;
+const long DELAY = 200;
+const int TOTAL_EASTER_EGGS = 3;
+bool easterEggsFound[TOTAL_EASTER_EGGS] = {false};
+unsigned long easterEggDisplayStartTime = 0;
+bool isDisplayingEasterEgg = false;
+unsigned long lastJoystickCheck = 0;
+
+// etc...
+```
+
+At the heart of the project lies the game state management, which governs the game's flow using an enumerated state structure:
+```cpp
+enum GameState {
+  MENU,
+  STARTING,
+  PLAYING,
+  GAME_OVER
+};
+This structure enables smooth transitions between various states and ensures that specific behaviors are executed during each phase of the game. The core state machine is managed in the playGame() function, which is called once per loop in the main program. In the MENU state, the checkJoystick() function is used for menu navigation, allowing the user to scroll through options and access submenus for settings adjustments. The menu options and changes are displayed using the displayMenu() and displaySubmenu() functions. The settings, such as brightness and volume, can be adjusted by moving the joystick up or down within the respective submenu. These settings are then applied using the playSound(int volume) and adjustBrightness(int brightness) functions.
+
+The displayOnLCD() function handles the display of text on the LCD screen, managing the separation of text across two lines:
+```cpp
+void displayOnLCD(const String &line1, const String &line2 = "") {
+  if (line1 != currentDisplayText || line2 != currentDisplayText2) {
+    lcd.clear();
+    lcd.home();
+    lcd.print(line1);
+    if (line2.length() > 0) {
+      lcd.setCursor(0, 1);
+      lcd.print(line2);
+    }
+    currentDisplayText = line1;
+    currentDisplayText2 = line2;
+  }
+}
+```
+
+When the user exits the menu and enters the game, pressing the shooting button triggers the start of the game in the selected mode. This is achieved by the following code snippet:
+```cpp
+if (shootingButtonPressed && !enteringName) { 
+  roundStartTime = millis();
+  currentGameState = STARTING;
+} else if (!isDisplayingEasterEgg) {
+  checkEasterEggs();
+}
+checkJoystick();
+
+if (enteringName) {
+  handleNameInput();
+}
+
+```
+This triggers a countdown sequence displayed on the LED matrices using the displayPattern() function, which is followed by the transition to the STARTING state. The countdown is displayed across both matrices, with different numbers being shown using the following pattern:
+```cpp
+clearMatrices();
+displayPattern(1, numberPatterns[0]); // 3 on second matrix
+playSound(volume);
+
+clearMatrices();
+displayPattern(0, numberPatterns[1]); // 2 on first matrix
+playSound(volume);
+
+clearMatrices();
+displayPattern(1, numberPatterns[2]); // 1 on second matrix
+playSound(volume);
+
+clearMatrices();
+displayPattern(1, numberPatterns[4]); // G on second matrix
+displayPattern(0, numberPatterns[3]); // 0 on first matrix
+
+```
+
+Once the countdown completes, the game state changes to STARTING, and the initializeGame() function sets up the game, initializing the score to 0 and resetting game elements such as the rocket, asteroids, and projectiles.
+
+During the PLAYING phase, various functions are called to handle gameplay:
+
+- handleGameControls() processes player input, including rocket movement and shooting mechanics.
+- spawnAsteroid() spawns new asteroids at regular intervals.
+- updateProjectiles() moves the projectiles fired by the rocket.
+- Asteroid speeds are updated based on elapsed time:
+  ```cpp
+  if (elapsedSeconds >= 30){
+    updateAsteroids(ASTEROID_SPEED3);
+  } else if (elapsedSeconds >= 15){
+    updateAsteroids(ASTEROID_SPEED2);
+  } else {
+    updateAsteroids(ASTEROID_SPEED1);
+  }
+  ```
+- checkCollisions() handles collision detection between projectiles and asteroids as well as between the rocket and asteroids, triggering a game over if the rocket collides with an asteroid.
+- updateDisplay() and updateScore() update the game visuals and score on the LED matrices.
+- The game also checks for Easter eggs with checkEasterEggs() and updates ammo in Time Rush mode using updateAmmo().
+
+The leaderboard system stores high scores using EEPROM memory. Functions like readLeaderboard(), storeLeaderboard(), and handleNameInput() are responsible for reading and saving leaderboard data, as well as handling the entry of player names for high scores.
+```cpp
+readLeaderboard(); // Loads leaderboard from EEPROM
+storeLeaderboard(); // Saves new scores to EEPROM
+handleNameInput(); // Manages name entry for high scores
+```
+
+To reset or initialize the leaderboard data, clearEEPROM() and initializeDefaultLeaderboard() can be used. These functions are called only once to initialize the leaderboard and then commented out after their first use.
+
+Each component of the project was tested individually during development to ensure it functions as expected. The LCD display and LED matrix were tested to verify that they display the correct information at each stage of the game, from the menu to the game itself. Functions such as displayMenu(), displayPattern(), and displayOnLCD() were tested to ensure that text and game patterns appeared correctly on the display. Additionally, the EEPROM memory was tested by checking if scores were correctly stored and retrieved using functions like readLeaderboard() and storeLeaderboard(). Playtesting was also conducted to evaluate the overall functionality of the game, ensuring smooth transitions between game states, accurate input handling, and the correct updating of scores, ammo, and game objects throughout the game duration. This iterative testing process helped identify and resolve any issues early on.
+
+<b>Key Interactions: </b>
+1. Game Loop Flow:
+  loop() → playGame() → State Machine → Input Handling → Game Updates → Display Updates
+2. Input Chain:
+  ISR Functions → handleGameControls() → Object Updates → Collision Checks → Display Updates
+3. Menu Navigation:
+  checkJoystick() → displayMenu()/displaySubmenu()/displaySettings() → LCD Updates → Settings Adjustments
+4. Score Management:
+  updateScore() → Game Over → handleNameInput() → storeLeaderboard() → readLeaderboard()
+
+This structure creates a complete game system where each function has a specific role, but works together with the others to create the full gameplay experience. The code uses a state machine pattern to manage different game states, with clear separation between input handling, game logic, and display updates.
+
+</details>
+
+<details>
+<summary> <b> Calibration Details </b> </summary>
+
+Joystick Calibration
+- Defined threshold values (LEFT_DOWN = 200, RIGHT_UP = 800)
+- Dead zone implementation for stability
+- Movement delay implementation for controlled response
+
+Button Debouncing
+- Implemented hardware interrupts with software debouncing
+- 200ms debounce delay for reliable input
+- State tracking for multiple button presses
+
+LED Matrix Brightness
+- Adjustable intensity levels (0-15)
+- User-configurable through settings menu
+</details>
+
+<details>
+<summary> <b> Optimization </b> </summary>
+
+- The displayOnLCD function is designed to prevent unnecessary LCD updates, reducing flicker and improving the response time of the display. It only clears and updates the screen when the content being displayed changes, thus avoiding the constant refreshing of the display when no new data is provided.
+  ```cpp
+  void displayOnLCD(const String &line1, const String &line2 = "") {
+    if (line1 != currentDisplayText || line2 != currentDisplayText2) {
+      lcd.clear();
+      lcd.home();
+      lcd.print(line1);
+      if (line2.length() > 0) {
+        lcd.setCursor(0, 1);
+        lcd.print(line2);
+      }
+      currentDisplayText = line1;
+      currentDisplayText2 = line2;
+    }
+  }
+  ```
+
+- To control the LED matrices effectively, hardware SPI is used for fast communication with the display. The refresh rates are optimized for smooth animations, and selective updates are made only for the active game elements. This minimizes the overhead of constantly refreshing the entire matrix and helps focus processing power on updating only the relevant game components. 
+
+- Memory management plays a considerable role in ensuring the stability of the game, especially when dealing with limited resources on the Arduino Uno. Compact data structures, such as the Point struct, are used to store the coordinates of game objects like the rocket and asteroids. This minimizes memory usage while maintaining the necessary data structure for proper gameplay functionality. Additionally, efficient use of array pools is employed for projectiles and asteroids, ensuring that memory is allocated statically for predictable performance and that objects are reused efficiently. This avoids memory fragmentation and ensures that the game can run smoothly over extended periods without running into memory-related issues.
+
+- To ensure smooth gameplay, the game loop is state-based, allowing the game to transition smoothly between different phases, such as menu, game start, playing, and game over. Instead of relying on delay functions, which can hinder the responsiveness of the game, time-based updates are used to control the progression of game events. This enables more precise timing and responsive behavior throughout gameplay.
+
+- Efficient collision detection algorithms are also employed to handle interactions between game objects (e.g., the rocket and asteroids) without causing delays in the game loop.
+
+The combination of these optimizations leads to smooth gameplay, responsive controls, and efficient memory usage
+</details>
+
+<details>
+<summary> <b> Demo Video </b> </summary>
+</details>
 
 ---
 
