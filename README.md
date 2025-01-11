@@ -14,9 +14,9 @@ Nowadays, there are many enthusiasts of retro games, as well as new consoles and
 
 - Game Flow:
 
-The game begins when the player presses the fire button, initiating a countdown sequence ("3... 2... 1..."). Once the countdown ends, the rocketship, initially positioned at the bottom center of the LED matrix, becomes controllable. The player uses the joystick to navigate the rocketship left, and right to avoid incoming asteroids, which descend continuously from the top of the LED matrix.
+The game begins when the player presses the fire button, initiating a countdown sequence ("3... 2... 1...GO"). Once the countdown ends, the rocketship, initially positioned at the bottom center of the LED matrix, becomes controllable. The player uses the joystick to navigate the rocketship up, and down to avoid incoming asteroids.
 
-In addition to dodging, the player can shoot projectiles to destroy asteroids. However, there’s a catch: the ammunition is limited. The remaining ammo count is displayed on the LCD screen, adding an element of resource management. Players can earn extra ammunition by reaching specific "milestone" scores, encouraging precise shooting and high performance.
+In addition to dodging, the player can shoot projectiles to destroy asteroids. However, there’s a catch: the ammunition is limited. The remaining ammo count is displayed on the LCD screen, adding an element of resource management. Players can earn extra ammunition by reaching specific "milestones" during the round ;), encouraging precise shooting and high performance.
 
 As the game progresses, the difficulty increases: the number of asteroids falling from the top grows steadily, making navigation and shooting more challenging. The game ends if the rocketship collides with an asteroid.
 
@@ -24,25 +24,23 @@ After the game concludes, if the player’s score ranks among the top five highe
 
 - Menu:
 
-When the build powers on, the LCD screen displays the game’s title, "Rocket vs Asteroids," along with "Shoot to start!" and "Press the joystick to open menu." 
+When the build powers on, the LCD screen displays "Shoot to Start" and "Right for Menu" guiding the player to make a choice. 
 
-Pressing the joystick opens a menu where options are displayed one at a time, and navigation is handled using the joystick. Players scroll through options by pushing the joystick up or down, enter a menu item by swiping right, go back by swiping left, and confirm selections by pressing the joystick. 
+Pressing the joystick opens a menu where options are displayed two at a time, and navigation is handled using the joystick. Players scroll through options by pushing the joystick up or down, enter a menu item by swiping right. Any changes to the settings or game mode selection are automatically saved upon returning to the previous menu.
 
-The menu includes a Leaderboard for the Time Rush mode (top three scores from the Time Rush mode). 
-
-The Modes menu allows players to select between Classic (standard mode) and Time Rush (game with a fixed timer, competitive) with modes activated by pressing the fire button. 
-
-The How to Play menu provides instructions on game mechanics, such as movement, shooting, ammo management, and mode descriptions, with navigation handled through up and down joystick movements. 
-
-The Settings menu includes options to adjust brightness (from 1 to 5) and toggle or adjust volume levels, with changes confirmed by pressing the joystick. 
+The menu includes:
+  - the Game Modes menu that allows players to select between Classic (standard mode with unlimited ammo and no time restriction) and Time Rush (game with a fixed timer and ammo, competitive)
+  - a Leaderboard for the Time Rush mode (top five scores from the Time Rush mode)
+  - the Settings menu, which includes options to adjust brightness (from 0 to 100%) and adjust volume levels (from 0 to 100%)
+  - an Easter egg counter.
 
 This intuitive system mimics retro arcade controls, enhancing the user experience with easy navigation, customizability, and a nostalgic feel.
 
-For this project, I will leverage various features from previous lab exercises:
+For this project, I will leverage the following features from previous lab exercises:
 
 - Interrupts and timers from Lab 2 will be utilized for precise timing of events such as asteroid movement, projectile firing, and the countdown sequence.
 - Button handling from Lab 0 will manage user inputs, including the fire button and joystick button presses.
-- AnalogWrite and AnalogRead from Lab 3 will be employed for joystick control and possibly adjusting features like brightness or buzzer output.
+- AnalogWrite and AnalogRead from Lab 3 will be employed for joystick control.
 
 ---
 
