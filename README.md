@@ -390,9 +390,11 @@ enum GameState {
   PLAYING,
   GAME_OVER
 };
+```
 This structure enables smooth transitions between various states and ensures that specific behaviors are executed during each phase of the game. The core state machine is managed in the playGame() function, which is called once per loop in the main program. In the MENU state, the checkJoystick() function is used for menu navigation, allowing the user to scroll through options and access submenus for settings adjustments. The menu options and changes are displayed using the displayMenu() and displaySubmenu() functions. The settings, such as brightness and volume, can be adjusted by moving the joystick up or down within the respective submenu. These settings are then applied using the playSound(int volume) and adjustBrightness(int brightness) functions.
 
 The displayOnLCD() function handles the display of text on the LCD screen, managing the separation of text across two lines:
+
 ```cpp
 void displayOnLCD(const String &line1, const String &line2 = "") {
   if (line1 != currentDisplayText || line2 != currentDisplayText2) {
@@ -541,6 +543,17 @@ The combination of these optimizations leads to smooth gameplay, responsive cont
 
 <details>
 <summary> <b> Demo Video </b> </summary>
+<div align="center">
+  <a href="https://www.youtube.com/watch?v=StTqXEQ2l-Y">
+     <img 
+      src="https://img.youtube.com/vi/l4JrSOgvjtM/maxresdefault.jpg" 
+      alt="Rocket vs Asteroids" 
+      style="width:100%;">
+  </a>
+</div>
+
+Videoclipul poate fi văzut prin accesarea link-ului:
+[Video pe YouTube](https://www.youtube.com/watch?v=l4JrSOgvjtM&ab_channel=AlexV)
 </details>
 
 ---
