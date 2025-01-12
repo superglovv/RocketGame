@@ -544,7 +544,7 @@ The combination of these optimizations leads to smooth gameplay, responsive cont
 <details>
 <summary> <b> Demo Video </b> </summary>
 <div align="center">
-  <a href="https://www.youtube.com/watch?v=StTqXEQ2l-Y">
+  <a href="https://www.youtube.com/watch?v=l4JrSOgvjtM&ab_channel=AlexV">
      <img 
       src="https://img.youtube.com/vi/l4JrSOgvjtM/maxresdefault.jpg" 
       alt="Rocket vs Asteroids" 
