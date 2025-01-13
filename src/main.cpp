@@ -32,9 +32,14 @@ int startupStep = 0;
 bool gameOverSoundPlayed = false;
 const unsigned long DISPLAY_TIME = 2000;
 const unsigned long DIVIDING_UNIT = 1000;
+const int maxScore = 9999;
 
 // Menu related:
 const String menuItems[] = {"Game Mode", "Leaderboard", "Settings", "Easter eggs"};
+const int firstIndex = 0;
+const int secondIndex = 1;
+const int thirdIndex = 2;
+const int fourthIndex = 3;
 const int MENU_SIZE = 4;
 const String gameModes[] = {"Classic", "Time Rush"};
 const unsigned long EASTER_EGG_DISPLAY_TIME = 2000; 
@@ -234,18 +239,18 @@ void displaySubmenu() {
   String line1 = menuItems[currentMenuIndex];
   String line2 = "";
 
-  if (currentMenuIndex == 0) { // "Game Mode"
+  if (currentMenuIndex == firstIndex) { // "Game Mode"
       line2 = '*' + gameModes[gameModeChosen];
       displayOnLCD(line1, line2);
     
-  } else if (currentMenuIndex == 1) { // "Leaderboard"
+  } else if (currentMenuIndex == secondIndex) { // "Leaderboard"
     line2 = String(leaderboard[leaderboardIndex].name);
     line2 += ": ";
     line2 += String(leaderboard[leaderboardIndex].score);
     displayOnLCD(line1, line2);
     
-  } else if (currentMenuIndex == 2) { // "Settings"
-    if (currentSubmenuIndex == 0) { // Brightness
+  } else if (currentMenuIndex == thirdIndex) { // "Settings"
+    if (currentSubmenuIndex == firstIndex) { // Brightness
       line2 = "Brightness: " + String(brightness);
     } else if (currentSubmenuIndex == 1) { // Volume
       line2 = "Volume: " + String(volume);
@@ -289,7 +294,7 @@ void readLeaderboard() {
     byte lowByte = EEPROM.read(addr + 1);
     leaderboard[i].score = (highByte << MATRIX_SIZE) | lowByte;
     
-    if (leaderboard[i].score < 0 || leaderboard[i].score > 9999) {
+    if (leaderboard[i].score < 0 || leaderboard[i].score > maxScore) {
       leaderboard[i].score = 0;
     }
     
@@ -439,21 +444,21 @@ void checkJoystick() {
     } else if (yValue > RIGHT_UP && currentMenuIndex < MENU_SIZE - 1) {
       currentMenuIndex++;
       displayMenu();
-    } else if (yValue < LEFT_DOWN && currentMenuIndex > 0) {
+    } else if (yValue < LEFT_DOWN && currentMenuIndex > firstIndex) {
       currentMenuIndex--;
       displayMenu();
     }
-  } else if (inSubmenu && currentMenuIndex == 2 && !inSettingsAdjust) {
+  } else if (inSubmenu && currentMenuIndex == thirdIndex && !inSettingsAdjust) {
     if (xValue < LEFT_DOWN) {
       inSubmenu = false;
       displayMenu();
     } else if (xValue > RIGHT_UP) {
       inSettingsAdjust = true;
       displaySettingsAdjust();
-    } else if (yValue > RIGHT_UP && currentSubmenuIndex < 1) {
+    } else if (yValue > RIGHT_UP && currentSubmenuIndex < secondIndex) {
       currentSubmenuIndex++;
       displaySubmenu();
-    } else if (yValue < LEFT_DOWN && currentSubmenuIndex > 0) {
+    } else if (yValue < LEFT_DOWN && currentSubmenuIndex > firstIndex) {
       currentSubmenuIndex--;
       displaySubmenu();
     }
@@ -463,18 +468,18 @@ void checkJoystick() {
       adjustBrightness(brightness);
       displaySubmenu();
     } else if (yValue > RIGHT_UP) { // Decrease value
-      if (currentSubmenuIndex == 0 && brightness > 0) {
+      if (currentSubmenuIndex == firstIndex && brightness > 0) {
         brightness = max(0, brightness - level_amount);
         displaySettingsAdjust();
-      } else if (currentSubmenuIndex == 1 && volume > 0) {
+      } else if (currentSubmenuIndex == secondIndex && volume > 0) {
         volume = max(0, volume - level_amount);
         displaySettingsAdjust();
       }
     } else if (yValue < LEFT_DOWN) { // Increase value
-      if (currentSubmenuIndex == 0 && brightness < level) {
+      if (currentSubmenuIndex == firstIndex && brightness < level) {
         brightness = min(level, brightness + level_amount);
         displaySettingsAdjust();
-      } else if (currentSubmenuIndex == 1 && volume < level) {
+      } else if (currentSubmenuIndex == secondIndex && volume < level) {
         volume = min(level, volume + level_amount);
         displaySettingsAdjust();
       }
@@ -485,7 +490,7 @@ void checkJoystick() {
       displayMenu();
     }
 
-    if (currentMenuIndex == 0) {
+    if (currentMenuIndex == firstIndex) {
       if (yValue > RIGHT_UP && gameModeChosen < (sizeof(gameModes) / sizeof(gameModes[0])) - 1) {
         gameModeChosen++;
         displaySubmenu();
@@ -495,7 +500,7 @@ void checkJoystick() {
       }
     }
 
-    if (currentMenuIndex == 1) {
+    if (currentMenuIndex == secondIndex) {
       if (yValue > RIGHT_UP && leaderboardIndex < (sizeof(leaderboard) / sizeof(leaderboard[0])) - 1) {
         leaderboardIndex++;
         displaySubmenu();
@@ -801,7 +806,7 @@ void playGame() {
       if (shootingButtonPressed && !enteringName) { 
           roundStartTime = millis();
           currentGameState = STARTING;
-          startupStep = 0;  // Make sure we start from beginning
+          startupStep = 0;
       } else if (!isDisplayingEasterEgg) {
         checkEasterEggs();
       }
@@ -812,10 +817,9 @@ void playGame() {
       }
       break;
       
-    case STARTING: {  // Added scope brackets
+    case STARTING: {
       unsigned long currentTime = millis();
       
-      // Initialize the sequence if we're just starting
       if (startupStep == 0) {
         soundStartTime = currentTime;
         clearMatrices();
@@ -824,9 +828,8 @@ void playGame() {
         startupStep = 1;
       }
       
-      // Handle each step of the sequence
       switch(startupStep) {
-        case 1: // Displaying 3
+        case 1:
           if (currentTime - soundStartTime >= soundDuration) {
             stopSound();
             clearMatrices();
@@ -837,7 +840,7 @@ void playGame() {
           }
           break;
           
-        case 2: // Displaying 2
+        case 2:
           if (currentTime - soundStartTime >= soundDuration) {
             stopSound();
             clearMatrices();
@@ -848,7 +851,7 @@ void playGame() {
           }
           break;
           
-        case 3: // Displaying 1
+        case 3:
           if (currentTime - soundStartTime >= soundDuration) {
             stopSound();
             clearMatrices();
@@ -860,14 +863,14 @@ void playGame() {
           }
           break;
           
-        case 4: // Displaying GO
+        case 4:
           if (currentTime - soundStartTime >= soundDuration) {
             stopSound();
             clearMatrices();
             initializeGame();
             lastScoreUpdate = currentTime;
-            roundStartTime = currentTime;  // Reset round start time
-            startupStep = 0; // Reset for next game
+            roundStartTime = currentTime;
+            startupStep = 0; 
           }
           break;
       }
@@ -925,12 +928,10 @@ void playGame() {
           playSound(volume);
           displayOnLCD("Game Over!", "Score: " + String(gameScore));
       } 
-      // Stop sound after duration
       else if (!gameOverSoundPlayed && currentTime - displayMessageStartTime >= soundDuration) {
           stopSound();
           gameOverSoundPlayed = true;
       }
-      // Handle state transition after display time
       else if (currentTime - displayMessageStartTime >= DISPLAY_TIME) {
           if (gameModeChosen == 1) {
               checkEasterEggs();
@@ -949,7 +950,7 @@ void playGame() {
               displayOnLCD("Shoot to start", "Right to Menu");
           }
           displayMessageStartTime = 0;
-          gameOverSoundPlayed = false; // Reset for next game over
+          gameOverSoundPlayed = false;
       }
       break;
   }
