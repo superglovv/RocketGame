@@ -25,6 +25,13 @@ bool easterEggsFound[TOTAL_EASTER_EGGS] = {false};
 unsigned long easterEggDisplayStartTime = 0;
 bool isDisplayingEasterEgg = false;
 unsigned long lastJoystickCheck = 0;
+unsigned long soundStartTime = 0;
+unsigned long soundDuration = 500;
+unsigned long displayMessageStartTime = 0;
+int startupStep = 0;
+bool gameOverSoundPlayed = false;
+const unsigned long DISPLAY_TIME = 2000;
+const unsigned long DIVIDING_UNIT = 1000;
 
 // Menu related:
 const String menuItems[] = {"Game Mode", "Leaderboard", "Settings", "Easter eggs"};
@@ -36,6 +43,10 @@ int currentSubmenuIndex = 0;
 int jbtncount = 0;
 int leaderboardIndex = 0;
 int gameModeChosen = 0;
+const int level = 100;
+const int level_amount = 10;
+const int max_intensity = 10;
+const int max_frequency = 4000;
 int brightness = 100;
 int volume = 50;
 int easterEggCount = 0;
@@ -43,17 +54,19 @@ bool inMenu = false;
 bool inSubmenu = false;
 
 // Leaderboard related:
+const int playerNameSize = 10;
 const char letters[] = {'A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z'};
-char playerName[10] = {0};
+char playerName[playerNameSize] = {0};
 int nameIndex = 0;
 bool enteringName = false;
 int currentLetter = 0;
 String currentDisplayText = "";
 String currentDisplayText2 = "";
 struct LeaderboardEntry {
-  char name[10];
+  char name[playerNameSize];
   int score;
 };
+const int nameSize = 8;
 const int MAX_ENTRIES = 5;
 LeaderboardEntry leaderboard[MAX_ENTRIES];
 const int EEPROM_START_ADDR = 0;
@@ -71,6 +84,8 @@ const unsigned long ASTEROID_SPEED1 = 600;
 const unsigned long ASTEROID_SPEED2 = 300; 
 const unsigned long ASTEROID_SPEED3 = 150; 
 const unsigned long MOVEMENT_DELAY = 150;
+const unsigned long ASTEROID_SECOND_SPEED_TIME = 30000;
+const unsigned long ASTEROID_FIRST_SPEED_TIME = 15000;
 const unsigned long ASTEROID_SPAWN_INTERVAL_SLOW = 1500;
 const unsigned long ASTEROID_SPAWN_INTERVAL_MEDIUM = 1000;
 const unsigned long ASTEROID_SPAWN_INTERVAL_FAST = 750;
@@ -127,7 +142,7 @@ unsigned long lastProjectileMove = 0;
 unsigned long lastAsteroidMove = 0;
 unsigned long lastAsteroidSpawn = 0;
 
-const byte numberPatterns[5][8] = {
+const byte numberPatterns[MATRIX_SIZE-3][MATRIX_SIZE] = {
     { // Number 3
         B00111100,
         B01111110,
@@ -181,10 +196,10 @@ const byte numberPatterns[5][8] = {
 };
 
 
-void displayPattern(int matrix, const byte pattern[8]) {
-    for (int row = 0; row < 8; row++) {
+void displayPattern(int matrix, const byte pattern[MATRIX_SIZE]) {
+    for (int row = 0; row < MATRIX_SIZE; row++) {
         byte rowPattern = pattern[row];
-        for (int col = 0; col < 8; col++) {
+        for (int col = 0; col < MATRIX_SIZE; col++) {
             lc.setLed(matrix, row, col, bitRead(rowPattern, 7 - col));
         }
     }
@@ -261,18 +276,18 @@ void displaySettingsAdjust() {
 void readLeaderboard() {
   int addr = EEPROM_START_ADDR;
   for (int i = 0; i < MAX_ENTRIES; i++) {
-    memset(leaderboard[i].name, 0, 10);
+    memset(leaderboard[i].name, 0, playerNameSize);
     
-    for (int j = 0; j < 10; j++) {
+    for (int j = 0; j < playerNameSize; j++) {
       char c = EEPROM.read(addr + j);
       if (c == 0 || c == 0xFF) break;
       leaderboard[i].name[j] = c;
     }
     
-    addr += 10;
+    addr += playerNameSize;
     byte highByte = EEPROM.read(addr);
     byte lowByte = EEPROM.read(addr + 1);
-    leaderboard[i].score = (highByte << 8) | lowByte;
+    leaderboard[i].score = (highByte << MATRIX_SIZE) | lowByte;
     
     if (leaderboard[i].score < 0 || leaderboard[i].score > 9999) {
       leaderboard[i].score = 0;
@@ -295,7 +310,7 @@ void storeLeaderboard(const char* name, int score) {
   
   if (insertPos < MAX_ENTRIES) {
     for (int i = MAX_ENTRIES - 1; i > insertPos; i--) {
-      strncpy(leaderboard[i].name, leaderboard[i-1].name, 10);
+      strncpy(leaderboard[i].name, leaderboard[i-1].name, playerNameSize);
       leaderboard[i].score = leaderboard[i-1].score;
     }
     
@@ -305,12 +320,12 @@ void storeLeaderboard(const char* name, int score) {
     
     int addr = EEPROM_START_ADDR;
     for (int i = 0; i < MAX_ENTRIES; i++) {
-      for (int j = 0; j < 10; j++) {
+      for (int j = 0; j < playerNameSize; j++) {
         EEPROM.write(addr + j, leaderboard[i].name[j]);
       }
       
-      addr += 10;
-      EEPROM.write(addr, (leaderboard[i].score >> 8) & 0xFF);
+      addr += playerNameSize;
+      EEPROM.write(addr, (leaderboard[i].score >> nameSize) & 0xFF);
       EEPROM.write(addr + 1, leaderboard[i].score & 0xFF);
       addr += 2;
     }
@@ -356,7 +371,7 @@ void handleNameInput() {
       displayOnLCD("Enter name:", String(playerName) + letters[currentLetter]);
       lastInput = millis();
     }
-    else if (xValue > RIGHT_UP && nameIndex < 8) {  // Right - confirm letter
+    else if (xValue > RIGHT_UP && nameIndex < nameSize) {  // Right - confirm letter
       playerName[nameIndex++] = letters[currentLetter];
       playerName[nameIndex] = '\0';
       currentLetter = 0;
@@ -384,16 +399,17 @@ void handleNameInput() {
 }
 
 void playSound(int volume) {
-  int frequency = map(volume, 0, 100, 0, 4000);
+  int frequency = map(volume, 0, level, 0, max_frequency);
   
   tone(BUZZER, frequency);
-  
-  delay(500);
+}
+
+void stopSound() {
   noTone(BUZZER);
 }
 
 void adjustBrightness(int brightness) {
-  int intensity = map(brightness, 0, 100, 0, 10);
+  int intensity = map(brightness, 0, level, 0, max_intensity);
   
   lc.setIntensity(0, intensity);
   lc.setIntensity(1, intensity);
@@ -448,18 +464,18 @@ void checkJoystick() {
       displaySubmenu();
     } else if (yValue > RIGHT_UP) { // Decrease value
       if (currentSubmenuIndex == 0 && brightness > 0) {
-        brightness = max(0, brightness - 10);
+        brightness = max(0, brightness - level_amount);
         displaySettingsAdjust();
       } else if (currentSubmenuIndex == 1 && volume > 0) {
-        volume = max(0, volume - 10);
+        volume = max(0, volume - level_amount);
         displaySettingsAdjust();
       }
     } else if (yValue < LEFT_DOWN) { // Increase value
-      if (currentSubmenuIndex == 0 && brightness < 100) {
-        brightness = min(100, brightness + 10);
+      if (currentSubmenuIndex == 0 && brightness < level) {
+        brightness = min(level, brightness + level_amount);
         displaySettingsAdjust();
-      } else if (currentSubmenuIndex == 1 && volume < 100) {
-        volume = min(100, volume + 10);
+      } else if (currentSubmenuIndex == 1 && volume < level) {
+        volume = min(level, volume + level_amount);
         displaySettingsAdjust();
       }
     }
@@ -511,7 +527,7 @@ void checkEasterEggs() {
     isDisplayingEasterEgg = true;
     easterEggDisplayStartTime = currentTime;
     displayOnLCD("Winner Winner,", " Chicken Dinner!");
-    delay(2000);
+    displayMessageStartTime = currentTime;
   }
   
   if (isDisplayingEasterEgg && 
@@ -602,18 +618,18 @@ void spawnAsteroid() {
   
   static unsigned long lastSpawnTime = 0;
   unsigned long currentSpawnInterval;
-  unsigned long elapsedSeconds = (millis() - roundStartTime) / 1000;
+  unsigned long elapsedSeconds = (millis() - roundStartTime) / DIVIDING_UNIT;
   
-  if (elapsedSeconds >= 30) {
+  if (elapsedSeconds >= ASTEROID_SECOND_SPEED_TIME / DIVIDING_UNIT) {
     currentSpawnInterval = ASTEROID_SPAWN_INTERVAL_FAST;
-  } else if (elapsedSeconds >= 15) {
+  } else if (elapsedSeconds >= ASTEROID_FIRST_SPEED_TIME / DIVIDING_UNIT) {
     currentSpawnInterval = ASTEROID_SPAWN_INTERVAL_MEDIUM;
   } else {
     currentSpawnInterval = ASTEROID_SPAWN_INTERVAL_SLOW;
   }
   
   if (millis() - lastSpawnTime > currentSpawnInterval) { 
-    int asteroidsToSpawn = (elapsedSeconds >= 30) ? 2 : 1;
+    int asteroidsToSpawn = (elapsedSeconds >= ASTEROID_SECOND_SPEED_TIME / DIVIDING_UNIT) ? 2 : 1;
     
     for (int spawn = 0; spawn < asteroidsToSpawn; spawn++) {
       for (int i = 0; i < MAX_ASTEROIDS; i++) {
@@ -657,17 +673,17 @@ void updateDisplay() {
   clearMatrices();
   
   if (currentGameState == PLAYING) {
-    for (int i = 0; i < 4; i++) {
+    for (int i = 0; i < MATRIX_SIZE/2; i++) {
       Point p = rocket.shape[i];
-      if (p.y >= 0 && p.y < 8) {
+      if (p.y >= 0 && p.y < MATRIX_SIZE) {
         lc.setLed(0, 7 - p.y, p.x, true);
       }
     }
     
     for (int i = 0; i < MAX_PROJECTILES; i++) {
       if (projectiles[i].active) {
-        int matrix = projectiles[i].pos.y / 8;
-        int y = projectiles[i].pos.y % 8;
+        int matrix = projectiles[i].pos.y / MATRIX_SIZE;
+        int y = projectiles[i].pos.y % MATRIX_SIZE;
         if (matrix >= 0 && matrix < 2) {
           lc.setLed(matrix, 7 - y, projectiles[i].pos.x, true);
         }
@@ -678,8 +694,8 @@ void updateDisplay() {
       if (asteroids[i].active) {
         for (int ax = 0; ax < ASTEROID_SIZE; ax++) {
           for (int ay = 0; ay < ASTEROID_SIZE; ay++) {
-            int matrix = (asteroids[i].pos.y + ay) / 8;
-            int y = (asteroids[i].pos.y + ay) % 8;
+            int matrix = (asteroids[i].pos.y + ay) / MATRIX_SIZE;
+            int y = (asteroids[i].pos.y + ay) % MATRIX_SIZE;
             int x = asteroids[i].pos.x + ax;
             if (matrix >= 0 && matrix < 2) {
               lc.setLed(matrix, 7 - y, x, true);
@@ -778,13 +794,14 @@ void checkCollisions() {
 }
 
 void playGame() {
-  unsigned long elapsedSeconds = (millis() - roundStartTime) / 1000;
+  unsigned long elapsedSeconds = (millis() - roundStartTime) / DIVIDING_UNIT;
 
   switch (currentGameState) {
     case MENU:
       if (shootingButtonPressed && !enteringName) { 
           roundStartTime = millis();
           currentGameState = STARTING;
+          startupStep = 0;  // Make sure we start from beginning
       } else if (!isDisplayingEasterEgg) {
         checkEasterEggs();
       }
@@ -795,31 +812,69 @@ void playGame() {
       }
       break;
       
-    case STARTING:
+    case STARTING: {  // Added scope brackets
+      unsigned long currentTime = millis();
+      
+      // Initialize the sequence if we're just starting
+      if (startupStep == 0) {
+        soundStartTime = currentTime;
+        clearMatrices();
+        displayPattern(1, numberPatterns[0]); // 3
+        playSound(volume);
+        startupStep = 1;
+      }
+      
+      // Handle each step of the sequence
+      switch(startupStep) {
+        case 1: // Displaying 3
+          if (currentTime - soundStartTime >= soundDuration) {
+            stopSound();
+            clearMatrices();
+            displayPattern(0, numberPatterns[1]); // 2
+            playSound(volume);
+            soundStartTime = currentTime;
+            startupStep = 2;
+          }
+          break;
+          
+        case 2: // Displaying 2
+          if (currentTime - soundStartTime >= soundDuration) {
+            stopSound();
+            clearMatrices();
+            displayPattern(1, numberPatterns[2]); // 1
+            playSound(volume);
+            soundStartTime = currentTime;
+            startupStep = 3;
+          }
+          break;
+          
+        case 3: // Displaying 1
+          if (currentTime - soundStartTime >= soundDuration) {
+            stopSound();
+            clearMatrices();
+            displayPattern(1, numberPatterns[4]); // G
+            displayPattern(0, numberPatterns[3]); // 0
+            playSound(volume);
+            soundStartTime = currentTime;
+            startupStep = 4;
+          }
+          break;
+          
+        case 4: // Displaying GO
+          if (currentTime - soundStartTime >= soundDuration) {
+            stopSound();
+            clearMatrices();
+            initializeGame();
+            lastScoreUpdate = currentTime;
+            roundStartTime = currentTime;  // Reset round start time
+            startupStep = 0; // Reset for next game
+          }
+          break;
+      }
+      
       displayOnLCD("Get Ready!", "");
-      
-      clearMatrices();
-      displayPattern(1, numberPatterns[0]); // 3 on second matrix
-      playSound(volume);
-            
-      clearMatrices();
-      displayPattern(0, numberPatterns[1]); // 2 on first matrix
-      playSound(volume);
-      
-      clearMatrices();
-      displayPattern(1, numberPatterns[2]); // 1 on second matrix
-      playSound(volume);
-            
-      clearMatrices();
-      displayPattern(1, numberPatterns[4]); // G on second matrix
-      displayPattern(0, numberPatterns[3]); // 0 on first matrix
-      playSound(volume);
-
-      clearMatrices();
-      initializeGame();
-      lastScoreUpdate = millis();
-      currentGameState = PLAYING;
       break;
+    }
       
     case PLAYING:
       if (gameModeChosen == 1) {
@@ -829,9 +884,9 @@ void playGame() {
           handleGameControls();
           spawnAsteroid();
           updateProjectiles();
-          if (elapsedSeconds >= 30){
+          if (elapsedSeconds >= ASTEROID_SECOND_SPEED_TIME / DIVIDING_UNIT){
             updateAsteroids(ASTEROID_SPEED3);
-          } else if (elapsedSeconds >= 15){
+          } else if (elapsedSeconds >= ASTEROID_FIRST_SPEED_TIME / DIVIDING_UNIT){
             updateAsteroids(ASTEROID_SPEED2);
           } else {
             updateAsteroids(ASTEROID_SPEED1);
@@ -847,9 +902,9 @@ void playGame() {
         handleGameControls();
         spawnAsteroid();
         updateProjectiles();
-        if (elapsedSeconds >= 30){
+        if (elapsedSeconds >= ASTEROID_SECOND_SPEED_TIME / DIVIDING_UNIT){
             updateAsteroids(ASTEROID_SPEED3);
-          } else if (elapsedSeconds >= 15){
+          } else if (elapsedSeconds >= ASTEROID_FIRST_SPEED_TIME / DIVIDING_UNIT){
             updateAsteroids(ASTEROID_SPEED2);
           } else {
             updateAsteroids(ASTEROID_SPEED1);
@@ -862,24 +917,39 @@ void playGame() {
       break;
       
     case GAME_OVER:
-      playSound(volume);
-      displayOnLCD("Game Over!", "Score: " + String(gameScore));
-      delay(2000);
-      if (gameModeChosen == 1) {
-          checkEasterEggs();
-          if (gameScore > leaderboard[MAX_ENTRIES-1].score) {
-            currentGameState = MENU;
-            enteringName = true;
-            currentLetter = 0;
-            displayOnLCD("Enter name:", String(playerName) + letters[currentLetter]);
+      unsigned long currentTime = millis();
+    
+      if (displayMessageStartTime == 0) {
+          displayMessageStartTime = currentTime;
+          gameOverSoundPlayed = false;
+          playSound(volume);
+          displayOnLCD("Game Over!", "Score: " + String(gameScore));
+      } 
+      // Stop sound after duration
+      else if (!gameOverSoundPlayed && currentTime - displayMessageStartTime >= soundDuration) {
+          stopSound();
+          gameOverSoundPlayed = true;
+      }
+      // Handle state transition after display time
+      else if (currentTime - displayMessageStartTime >= DISPLAY_TIME) {
+          if (gameModeChosen == 1) {
+              checkEasterEggs();
+              if (gameScore > leaderboard[MAX_ENTRIES-1].score) {
+                  currentGameState = MENU;
+                  enteringName = true;
+                  currentLetter = 0;
+                  displayOnLCD("Enter name:", String(playerName) + letters[currentLetter]);
+              } else {
+                  currentGameState = MENU;
+                  displayOnLCD("Score too low", "Try again!");
+                  displayMessageStartTime = millis();
+              }
           } else {
-            currentGameState = MENU;
-            displayOnLCD("Score too low", "Try again!");
-            delay(2000);
+              currentGameState = MENU;
+              displayOnLCD("Shoot to start", "Right to Menu");
           }
-      } else {
-        currentGameState = MENU;
-        displayOnLCD("Shoot to start", "Right to Menu");
+          displayMessageStartTime = 0;
+          gameOverSoundPlayed = false; // Reset for next game over
       }
       break;
   }
@@ -916,13 +986,13 @@ void setup() {
 
   for (int i = 0; i < 2; i++) {
     lc.shutdown(i, false);           
-    lc.setIntensity(i, 10); 
+    lc.setIntensity(i, max_intensity); 
     lc.clearDisplay(i);              
   }
 
   for (int matrix = 1; matrix >= 0; matrix--) {
-    for (int row = 0; row < 8; row++) {
-      for (int col = 0; col < 8; col++) {
+    for (int row = 0; row < MATRIX_SIZE; row++) {
+      for (int col = 0; col < MATRIX_SIZE; col++) {
         lc.setLed(matrix, row, col, true);
       }
     }
