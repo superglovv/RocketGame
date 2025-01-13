@@ -343,8 +343,6 @@ Additionally, in the project I've used PWM through the tone() function for sound
 void playSound(int volume) {
   int frequency = map(volume, 0, 100, 0, 4000);
   tone(BUZZER, frequency);
-  delay(500);
-  noTone(BUZZER);
 }
 ```
 
