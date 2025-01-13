@@ -543,6 +543,8 @@ The combination of these optimizations leads to smooth gameplay, responsive cont
 
 <details>
 <summary> <b> Demo Video </b> </summary>
+Here's a video showcasing some gameplay and how to navigate the menu:
+
 <div align="center">
   <a href="https://www.youtube.com/watch?v=l4JrSOgvjtM&ab_channel=AlexV">
      <img 
@@ -552,8 +554,7 @@ The combination of these optimizations leads to smooth gameplay, responsive cont
   </a>
 </div>
 
-Videoclipul poate fi văzut prin accesarea link-ului:
-[Video pe YouTube](https://www.youtube.com/watch?v=l4JrSOgvjtM&ab_channel=AlexV)
+
 </details>
 
 ---
