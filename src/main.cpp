@@ -48,6 +48,7 @@ int currentSubmenuIndex = 0;
 int jbtncount = 0;
 int leaderboardIndex = 0;
 int gameModeChosen = 0;
+const int timeRushMode = 1;
 const int level = 100;
 const int level_amount = 10;
 const int max_intensity = 10;
@@ -575,7 +576,7 @@ void initializeGame() {
   gameScore = 0;
   currentGameState = PLAYING;
   
-  if (gameModeChosen == 1) { // Time Rush mode
+  if (gameModeChosen == timeRushMode) { // Time Rush mode
         currentAmmo = INITIAL_AMMO;
         lastAmmoReplenish = millis();
     }
@@ -734,7 +735,7 @@ void handleGameControls() {
     }
 
     if (shootingButtonPressed) {
-        if (gameModeChosen == 1 && currentAmmo <= 0) {
+        if (gameModeChosen == timeRushMode && currentAmmo <= 0) {
             shootingButtonPressed = false;
             return;
         }
@@ -744,7 +745,7 @@ void handleGameControls() {
                 projectiles[i].active = true;
                 projectiles[i].pos = {rocket.pos.x, rocket.pos.y + 3};
                 
-                if (gameModeChosen == 1) {
+                if (gameModeChosen == timeRushMode) {
                     currentAmmo--;
                 }
                 
@@ -880,7 +881,7 @@ void playGame() {
     }
       
     case PLAYING:
-      if (gameModeChosen == 1) {
+      if (gameModeChosen == timeRushMode) {
         if (millis() - roundStartTime >= roundTime){
           currentGameState = GAME_OVER;
         } else {
@@ -933,7 +934,7 @@ void playGame() {
           gameOverSoundPlayed = true;
       }
       else if (currentTime - displayMessageStartTime >= DISPLAY_TIME) {
-          if (gameModeChosen == 1) {
+          if (gameModeChosen == timeRushMode) {
               checkEasterEggs();
               if (gameScore > leaderboard[MAX_ENTRIES-1].score) {
                   currentGameState = MENU;
