@@ -293,7 +293,7 @@ void readLeaderboard() {
     addr += playerNameSize;
     byte highByte = EEPROM.read(addr);
     byte lowByte = EEPROM.read(addr + 1);
-    leaderboard[i].score = (highByte << MATRIX_SIZE) | lowByte;
+    leaderboard[i].score = (highByte << nameSize) | lowByte;
     
     if (leaderboard[i].score < 0 || leaderboard[i].score > maxScore) {
       leaderboard[i].score = 0;
@@ -576,7 +576,7 @@ void initializeGame() {
   gameScore = 0;
   currentGameState = PLAYING;
   
-  if (gameModeChosen == timeRushMode) { // Time Rush mode
+  if (gameModeChosen == timeRushMode) {
         currentAmmo = INITIAL_AMMO;
         lastAmmoReplenish = millis();
     }
