@@ -73,6 +73,7 @@ struct LeaderboardEntry {
   int score;
 };
 const int nameSize = 8;
+const int eepromMem = 512;
 const int MAX_ENTRIES = 5;
 LeaderboardEntry leaderboard[MAX_ENTRIES];
 const int EEPROM_START_ADDR = 0;
@@ -348,7 +349,7 @@ void storeLeaderboard(const char* name, int score) {
 }
 
 void clearEEPROM() {
-  for (int i = 0; i < 512; i++) {
+  for (int i = 0; i < eepromMem; i++) {
     EEPROM.write(i, 0xFF);
   }
 }
