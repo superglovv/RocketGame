@@ -341,7 +341,7 @@ AnalogRead is used for joystick position detection, reading values from 0-1023 t
 Additionally, in the project I've used PWM through the tone() function for sound generation, with volume control mapped to frequency values.
 ```cpp
 void playSound(int volume) {
-  int frequency = map(volume, 0, 100, 0, 4000);
+  int frequency = map(volume, 0, level, 0, max_frequency);
   tone(BUZZER, frequency);
 }
 ```
@@ -426,21 +426,56 @@ if (enteringName) {
 ```
 This triggers a countdown sequence displayed on the LED matrices using the displayPattern() function, which is followed by the transition to the STARTING state. The countdown is displayed across both matrices, with different numbers being shown using the following pattern:
 ```cpp
-clearMatrices();
-displayPattern(1, numberPatterns[0]); // 3 on second matrix
-playSound(volume);
-
-clearMatrices();
-displayPattern(0, numberPatterns[1]); // 2 on first matrix
-playSound(volume);
-
-clearMatrices();
-displayPattern(1, numberPatterns[2]); // 1 on second matrix
-playSound(volume);
-
-clearMatrices();
-displayPattern(1, numberPatterns[4]); // G on second matrix
-displayPattern(0, numberPatterns[3]); // 0 on first matrix
+switch(startupStep) {
+        case 1:
+          if (currentTime - soundStartTime >= soundDuration) {
+            stopSound();
+            clearMatrices();
+            displayPattern(0, numberPatterns[1]); // 2
+            playSound(volume);
+            soundStartTime = currentTime;
+            startupStep = 2;
+          }
+          break;
+          
+        case 2:
+          if (currentTime - soundStartTime >= soundDuration) {
+            stopSound();
+            clearMatrices();
+            displayPattern(1, numberPatterns[2]); // 1
+            playSound(volume);
+            soundStartTime = currentTime;
+            startupStep = 3;
+          }
+          break;
+          
+        case 3:
+          if (currentTime - soundStartTime >= soundDuration) {
+            stopSound();
+            clearMatrices();
+            displayPattern(1, numberPatterns[4]); // G
+            displayPattern(0, numberPatterns[3]); // 0
+            playSound(volume);
+            soundStartTime = currentTime;
+            startupStep = 4;
+          }
+          break;
+          
+        case 4:
+          if (currentTime - soundStartTime >= soundDuration) {
+            stopSound();
+            clearMatrices();
+            initializeGame();
+            lastScoreUpdate = currentTime;
+            roundStartTime = currentTime;
+            startupStep = 0; 
+          }
+          break;
+      }
+      
+      displayOnLCD("Get Ready!", "");
+      break;
+    }
 
 ```
 
