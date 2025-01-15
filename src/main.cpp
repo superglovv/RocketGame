@@ -72,7 +72,7 @@ struct LeaderboardEntry {
   char name[playerNameSize];
   int score;
 };
-const int nameSize = 8;
+const int byteSize = 8;
 const int eepromMem = 512;
 const int MAX_ENTRIES = 5;
 LeaderboardEntry leaderboard[MAX_ENTRIES];
@@ -294,7 +294,7 @@ void readLeaderboard() {
     addr += playerNameSize;
     byte highByte = EEPROM.read(addr);
     byte lowByte = EEPROM.read(addr + 1);
-    leaderboard[i].score = (highByte << nameSize) | lowByte;
+    leaderboard[i].score = (highByte << byteSize) | lowByte;
     
     if (leaderboard[i].score < 0 || leaderboard[i].score > maxScore) {
       leaderboard[i].score = 0;
@@ -332,7 +332,7 @@ void storeLeaderboard(const char* name, int score) {
       }
       
       addr += playerNameSize;
-      EEPROM.write(addr, (leaderboard[i].score >> nameSize) & 0xFF);
+      EEPROM.write(addr, (leaderboard[i].score >> byteSize) & 0xFF);
       EEPROM.write(addr + 1, leaderboard[i].score & 0xFF);
       addr += 2;
     }
@@ -378,7 +378,7 @@ void handleNameInput() {
       displayOnLCD("Enter name:", String(playerName) + letters[currentLetter]);
       lastInput = millis();
     }
-    else if (xValue > RIGHT_UP && nameIndex < nameSize) {  // Right - confirm letter
+    else if (xValue > RIGHT_UP && nameIndex < playerNameSize) {  // Right - confirm letter
       playerName[nameIndex++] = letters[currentLetter];
       playerName[nameIndex] = '\0';
       currentLetter = 0;
